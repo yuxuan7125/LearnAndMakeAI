@@ -1,1 +1,1 @@
-# LearnAndMakeAI
+# Learn and Make AI
