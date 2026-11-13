@@ -3,10 +3,13 @@ import numpy as np
 
 # 讀取資料
 data = pd.read_csv("train.csv")
-
-x = data["X"].to_numpy(dtype=float)/10
-y = data["Y"].to_numpy(dtype=float)/10
+pre_x = data["X"].to_numpy(dtype=float)
+pre_y = data["Y"].to_numpy(dtype=float)
 ans = data["answer"].to_numpy(dtype=float)
+scale_factor_x = np.max(pre_x)
+scale_factor_y = np.max(pre_y)
+x = pre_x / scale_factor_x
+y = pre_y / scale_factor_y
 
 # 初始化資料
 parms = np.array([0.0]*5)
@@ -22,8 +25,10 @@ features = np.array([
 learning_rate = 0.1
 
 # 開始訓練
+max_times = 100000 
 loss = 1.0
-while(loss>=0.0001):
+while(loss>=0.0001 and max_times):
+    max_times -= 1
 
     # 模型預測
     prediction = features @ parms
@@ -39,13 +44,13 @@ while(loss>=0.0001):
 
     # 計算 loss
     loss = np.mean(error ** 2)
-
-    print("loss = " , loss)
+    if max_times%1000 == 0:
+        print("loss = " , loss)
 
 print("\n訓練完成")
 
-x_test = int(input("\n預測 x = "))/10
-y_test = int(input("\n預測 y = "))/10
+x_test = int(input("\n預測 x = "))/scale_factor_x
+y_test = int(input("\n預測 y = "))/scale_factor_y
 text_features = np.array([
     x_test**2,
     x_test**1,
