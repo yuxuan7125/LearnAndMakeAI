@@ -1,11 +1,11 @@
-import pandas as pd
 import numpy as np
+from make_train import make_train
 
 # 讀取資料
-data = pd.read_csv("train.csv", header = None)
+data = np.array(make_train(),dtype=float)
 
-pre_inputs = data.iloc[:,:-1].to_numpy(dtype=float)
-outputs = data.iloc[:,-1].to_numpy(dtype=float)
+pre_inputs = data[:,:-1]
+outputs = data[:,-1]
 scale_factor = np.max(pre_inputs,axis=0)
 inputs = pre_inputs / scale_factor
 num_inputs = inputs.shape[1]
@@ -25,7 +25,7 @@ learning_rate = 0.1
 # 開始訓練
 max_times = 100000 
 loss = 1.0
-while(loss>=0.0001 and max_times):
+while(loss>=0.1 and max_times):
     max_times -= 1
 
     # 模型預測
