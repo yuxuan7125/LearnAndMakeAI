@@ -5,13 +5,16 @@ import numpy as np
 data = pd.read_csv("train.csv")
 
 x = data["X"].to_numpy(dtype=float)/10
-y = data["Y"].to_numpy(dtype=float)
+y = data["Y"].to_numpy(dtype=float)/10
+ans = data["answer"].to_numpy(dtype=float)
 
 # 初始化資料
-parms = np.array([0.0]*3)
+parms = np.array([0.0]*5)
 features = np.array([
     x**2,
     x**1,
+    y**2,
+    y**1,
     x**0
 ]).T
 
@@ -26,7 +29,7 @@ while(loss>=0.0001):
     prediction = features @ parms
 
     # 計算誤差
-    error = prediction - y
+    error = prediction - ans
 
     # 計算梯度
     gradient = 2 * np.mean(features * error[:,None] , axis=0)
@@ -42,10 +45,13 @@ while(loss>=0.0001):
 print("\n訓練完成")
 
 x_test = int(input("\n預測 x = "))/10
+y_test = int(input("\n預測 y = "))/10
 text_features = np.array([
     x_test**2,
     x_test**1,
+    y_test**2,
+    y_test**1,
     x_test**0
 ]).T
 text_prediction = text_features @ parms
-print("y = ", int(text_prediction)+1)
+print("answer = ", round(text_prediction))
