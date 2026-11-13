@@ -46,9 +46,5 @@ print("b = " , b)
 print("c = " , c)
 
 
-print("\n預測 x = ")
-x_input = int(input())
+x_input = int(input("\n預測 x = "))
 print("y = ", a*(x_input/10)**2 + b*(x_input/10) + c)
-
-
-
