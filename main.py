@@ -7,10 +7,13 @@ data = pd.read_csv("train.csv")
 x = data["X"].to_numpy(dtype=float)/10
 y = data["Y"].to_numpy(dtype=float)
 
-# 初始參數
-a = 0.0
-b = 0.0
-c = 0.0
+# 初始化資料
+parms = np.array([0.0]*3)
+features = np.array([
+    x**2,
+    x**1,
+    x**0
+]).T
 
 # 學習率
 learning_rate = 0.1
@@ -20,20 +23,16 @@ loss = 1.0
 while(loss>=0.0001):
 
     # 模型預測
-    prediction = a*x**2 + b*x + c
+    prediction = features @ parms
 
     # 計算誤差
     error = prediction - y
 
     # 計算梯度
-    da = np.mean(2 * error * x**2)
-    db = np.mean(2 * error * x)
-    dc = np.mean(2 * error)
+    gradient = 2 * np.mean(features * error[:,None] , axis=0)
 
     # 更新參數
-    a -= learning_rate * da
-    b -= learning_rate * db
-    c -= learning_rate * dc
+    parms -= gradient * learning_rate
 
     # 計算 loss
     loss = np.mean(error ** 2)
@@ -41,10 +40,12 @@ while(loss>=0.0001):
     print("loss = " , loss)
 
 print("\n訓練完成")
-print("a = " , a)
-print("b = " , b)
-print("c = " , c)
 
-
-x_input = int(input("\n預測 x = "))
-print("y = ", a*(x_input/10)**2 + b*(x_input/10) + c)
+x_test = int(input("\n預測 x = "))/10
+text_features = np.array([
+    x_test**2,
+    x_test**1,
+    x_test**0
+]).T
+text_prediction = text_features @ parms
+print("y = ", int(text_prediction)+1)
