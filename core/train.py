@@ -1,12 +1,14 @@
 import random
-import pandas as pd
 
 
-def make_train():
+def make_train(amount: int=30) -> list[list[int, int, int]]:
+    if amount < 10:
+        raise ValueError("Amont請大於10")
+    
     data = []
 
-    for x in range(30):
-        for y in range(30):
+    for x in range(amount):
+        for y in range(amount):
 
             rd = random.randint(1,3)
             if rd!=1 :
