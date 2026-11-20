@@ -3,6 +3,7 @@ import concurrent.futures as con
 import numpy as np
 from core import *
 import pandas as pd
+import random
 
 def ask() -> int:
     while True:
@@ -24,16 +25,27 @@ def main():
         parms, num_inputs = load_train_result()
         predict(parms, num_inputs)
     if choice == 2:
-        # 讀取資料
+        # 讀取資料 & 整理資料
         train_data_filepath = "train_data/train_data.csv"
         # train_data_filepath = str(input("訓練檔案(.csv)："))
         if not os.path.exists(train_data_filepath):
             make_train_data(train_data_filepath)
-        data = pd.read_csv(train_data_filepath, header=None)
-        pre_inputs = data.iloc[:, :-1].to_numpy(dtype=float)
+        data = pd.read_csv(train_data_filepath, header=None).to_numpy(dtype=float)
+
+        num_data = len(data)
+        data_idx = [random.choices([0,1], weights=[20,80])[0] for i in range(num_data)]
+        train_idx = []
+        text_idx = []
+        for i in range(num_data):
+            if data_idx[i]:
+                train_idx.append(i)
+            else:
+                text_idx.append(i)
+
+        pre_inputs = data[train_idx, :-1]
         inputs_scale = np.max(pre_inputs, axis=0)
         inputs = pre_inputs / inputs_scale
-        outputs = data.iloc[:, -1].to_numpy(dtype=float)
+        outputs = data[train_idx, -1]
         num_inputs = len(inputs_scale)
 
         # 初始化資料
@@ -59,8 +71,10 @@ def main():
             if max_times % 1000 == 0:
                 print("loss = ", loss)
 
-        print("\n訓練完成\n")
+        print("\n訓練完成")
         save_train_result(parms, inputs_scale)
+        text_loss = get_loss(data[text_idx])
+        print(f"loss差值：{loss-text_loss}\n")
 
 if __name__ == "__main__":
     while True:
