@@ -1,11 +1,11 @@
-from .train import make_train
-from .data import load_train_data, save_train_data, check_train_file
+from .make_train_data import make_train_data
+from .data import load_train_result, save_train_result, check_train_result
 from .predict import predict
 
 __all__ = [
-    "train",
-    "load_train_data",
-    "save_train_data",
-    "check_train_file",
+    "make_train_data",
+    "load_train_result",
+    "save_train_result",
+    "check_train_result",
     "predict"
 ]
