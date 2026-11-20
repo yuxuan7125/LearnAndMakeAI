@@ -1,5 +1,4 @@
 import os
-import concurrent.futures as con
 import numpy as np
 from core import *
 import pandas as pd
@@ -22,8 +21,7 @@ def ask() -> int:
 def main():
     choice = ask() if check_train_result() else 2
     if choice == 1:
-        parms, num_inputs = load_train_result()
-        predict(parms, num_inputs)
+        predict()
     if choice == 2:
         # 讀取資料 & 整理資料
         train_data_filepath = "train_data/train_data.csv"
@@ -47,21 +45,22 @@ def main():
         inputs = pre_inputs / inputs_scale
         outputs = data[train_idx, -1]
         num_inputs = len(inputs_scale)
+        max_degree = 2
 
         # 初始化資料
-        parms = np.array([0.0] * (num_inputs * 2 + 1))
+        parms = np.array([0.0] * (num_inputs * max_degree + 1))
         features_list = []
         for i in range(num_inputs):
-            features_list.append(inputs[:, i] ** 2)
-            features_list.append(inputs[:, i] ** 1)
+            for dg in range(max_degree, 0, -1):
+                features_list.append(inputs[:, i] ** dg)
         features_list.append(inputs[:, 0] ** 0)
         features = np.array(features_list).T
 
         # 學習率與訓練迴圈
         learning_rate = 0.1
         max_times = 100000
-        loss = 1.0
-        while loss >= 0.1 and max_times:
+        loss = 10.0**100
+        while loss >= 1.0 and max_times:
             max_times -= 1
             prediction = features @ parms
             error = prediction - outputs
@@ -72,7 +71,7 @@ def main():
                 print("loss = ", loss)
 
         print("\n訓練完成")
-        save_train_result(parms, inputs_scale)
+        save_train_result(parms, inputs_scale, max_degree)
         text_loss = get_loss(data[text_idx])
         print(f"loss差值：{loss-text_loss}\n")
 

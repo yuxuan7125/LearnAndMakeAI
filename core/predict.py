@@ -1,16 +1,19 @@
 import numpy as np
+from core import load_train_result
 
 
-def predict(parms: np.ndarray, num_inputs: int) -> None:
+def predict(filepath: str = "train_result/model_weights.npz") -> None:
+    parms, num_inputs, max_degree = load_train_result()
+    
     terms = []
+    degree = [dg for dg in range(max_degree,0,-1)]
     for i in range(num_inputs):
-        w2 = parms[i * 2]
-        w1 = parms[i * 2 + 1]
-        if i:
-            terms.append(f"{w2:+.4f} * x{i+1}^2")
-        else:
-            terms.append(f"{w2:.4f} * x{i+1}^2")
-        terms.append(f"{w1:+.4f} * x{i+1}")
+        for j,dg in enumerate(degree):
+            w = parms[(i+1) * dg]
+            if i==0 and j==0:
+                terms.append(f"{w:.4f} * x{i+1}^{dg}")
+            else:
+                terms.append(f"{2:+.4f} * x{i+1}^{dg}")
 
     bias = parms[-1]
     terms.append(f"{bias:+.4f}")
@@ -24,8 +27,8 @@ def predict(parms: np.ndarray, num_inputs: int) -> None:
 
     text_features_list = []
     for i in range(num_inputs):
-        text_features_list.append(text[i] ** 2)
-        text_features_list.append(text[i] ** 1)
+        for dg in range(max_degree, 0, -1):
+            text_features_list.append(text[i] ** dg)
     text_features_list.append(text[0] ** 0)
     text_features = np.array(text_features_list)
 

@@ -30,3 +30,5 @@ def make_train_data(filepath: str="train_data/train_data.csv", amount: int=30) -
         os.makedirs(folder, exist_ok=True)
 
     pd.DataFrame(data).to_csv(filepath, index=None, header=None)
+
+make_train_data()
