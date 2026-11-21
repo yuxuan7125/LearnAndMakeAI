@@ -26,8 +26,8 @@ def main():
         # 讀取資料 & 整理資料
         train_data_filepath = "train_data/train_data.csv"
         # train_data_filepath = str(input("訓練檔案(.csv)："))
-        if not os.path.exists(train_data_filepath):
-            make_train_data(train_data_filepath)
+        # if not os.path.exists(train_data_filepath):
+        make_train_data(train_data_filepath)
         data = pd.read_csv(train_data_filepath, header=None).to_numpy(dtype=float)
 
         num_data = len(data)
@@ -45,20 +45,20 @@ def main():
         inputs = pre_inputs / inputs_scale
         outputs = data[train_idx, -1]
         num_inputs = len(inputs_scale)
-        max_degree = 2
+        degree = [i for i in range(4, 0, -1)]
 
         # 初始化資料
-        parms = np.array([0.0] * (num_inputs * max_degree + 1))
+        parms = np.array([0.0] * (num_inputs * len(degree) + 1))
         features_list = []
         for i in range(num_inputs):
-            for dg in range(max_degree, 0, -1):
+            for dg in degree:
                 features_list.append(inputs[:, i] ** dg)
         features_list.append(inputs[:, 0] ** 0)
         features = np.array(features_list).T
 
         # 學習率與訓練迴圈
-        learning_rate = 0.1
-        max_times = 100000
+        learning_rate = 0.3
+        max_times = 10000000
         loss = 10.0**100
         while loss >= 1.0 and max_times:
             max_times -= 1
@@ -67,11 +67,11 @@ def main():
             gradient = 2 * np.mean(features * error[:, None], axis=0)
             parms -= gradient * learning_rate
             loss = np.mean(error**2)
-            if max_times % 1000 == 0:
+            if max_times % 10000 == 0:
                 print("loss = ", loss)
 
         print("\n訓練完成")
-        save_train_result(parms, inputs_scale, max_degree)
+        save_train_result(parms, inputs_scale, degree)
         text_loss = get_loss(data[text_idx])
         print(f"loss差值：{loss-text_loss}\n")
 

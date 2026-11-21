@@ -16,7 +16,7 @@ def make_train_data(filepath: str="train_data/train_data.csv", amount: int=30) -
             if rd!=1 :
                 continue
 
-            ans = x**2 + 3*x - 2*y**2 + y - 3
+            ans = x**3 + 3*x - 2*y**2 + y - 3
             rd = random.randint(1,2)
             if rd==1 :
                 ans+=1
@@ -30,5 +30,3 @@ def make_train_data(filepath: str="train_data/train_data.csv", amount: int=30) -
         os.makedirs(folder, exist_ok=True)
 
     pd.DataFrame(data).to_csv(filepath, index=None, header=None)
-
-make_train_data()
