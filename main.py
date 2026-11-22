@@ -3,16 +3,18 @@ import numpy as np
 from core import *
 import pandas as pd
 import random
+import sys
 
 def ask() -> int:
     while True:
         print("""請選擇：
+0 結束
 1 預測答案
 2 訓練模型\n""")
         try:
             choice = int(input(""))
             print("\n")
-            if choice in [i for i in range (1,3)]:
+            if choice in [0,1,2]:
                 return choice
             print("選擇錯誤\n")
         except ValueError:
@@ -20,6 +22,8 @@ def ask() -> int:
 
 def main():
     choice = ask() if check_train_result() else 2
+    if choice == 0:
+        sys.exit("結束")
     if choice == 1:
         predict()
     if choice == 2:
@@ -59,21 +63,22 @@ def main():
         # 學習率與訓練迴圈
         learning_rate = 0.3
         max_times = 10000000
+        cur_times = 0
         loss = 10.0**100
-        while loss >= 1.0 and max_times:
-            max_times -= 1
+        while loss >= 1.0 and cur_times < max_times:
+            cur_times += 1
             prediction = features @ parms
             error = prediction - outputs
             gradient = 2 * np.mean(features * error[:, None], axis=0)
             parms -= gradient * learning_rate
             loss = np.mean(error**2)
-            if max_times % 10000 == 0:
-                print("loss = ", loss)
+            if cur_times % 1000 == 0:
+                print(f"cur_times = {cur_times} , loss = {loss}")
 
         print("\n訓練完成")
         save_train_result(parms, inputs_scale, degree)
         text_loss = get_loss(data[text_idx])
-        print(f"loss差值：{loss-text_loss}\n")
+        print(f"loss差值 = {loss-text_loss}\n")
 
 if __name__ == "__main__":
     while True:

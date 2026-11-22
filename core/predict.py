@@ -6,19 +6,22 @@ def predict(filepath: str = "train_result/model_weights.npz") -> None:
     parms, num_inputs, degree = load_train_result()
     
     terms = []
-    degree
+    first = True
     for i in range(num_inputs):
         for j,dg in enumerate(degree):
-            w = parms[i * len(degree) + j]
-            if i==0 and j==0:
-                terms.append(f"{w:.4f} * x{i+1}^{dg}")
-            else:
-                terms.append(f"{w:+.4f} * x{i+1}^{dg}")
+            w = round(parms[i * len(degree) + j])
+            if w:
+                if first:
+                    first = False
+                    terms.append(f"{w}*x{i+1}^{dg}")
+                else:
+                    terms.append(f"{w:+}*x{i+1}^{dg}")
 
-    bias = parms[-1]
-    terms.append(f"{bias:+.4f}")
+    bias = round(parms[-1])
+    if bias:
+        terms.append(f"{bias:+}")
 
-    print("預測公式：y = " + " ".join(terms) + "\n")
+    print("預測公式：y = " + " ".join(terms).replace("1*","").replace("^1","").replace("+","+ ").replace("-","- ") + "\n")
 
     text = [0.0] * num_inputs
     for i in range(num_inputs):
